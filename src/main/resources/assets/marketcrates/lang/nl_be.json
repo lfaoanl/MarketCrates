@@ -6,5 +6,6 @@
   "block.marketcrates.acacia_crate":"Acaciahouten Kist",
   "block.marketcrates.dark_oak_crate":"Donkereikenhouten Kist",
   "block.marketcrates.crimson_crate":"Helrode houten Kist",
-  "block.marketcrates.warped_crate": "Spookachtige houten Kist"
+  "block.marketcrates.warped_crate": "Spookachtige houten Kist",
+  "block.marketcrates.mangrove_crate": "Mangrove houten Kist"
 }

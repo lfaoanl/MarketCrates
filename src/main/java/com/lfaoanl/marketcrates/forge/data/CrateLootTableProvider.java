@@ -5,9 +5,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.lfaoanl.marketcrates.common.Ref;
 import com.lfaoanl.marketcrates.forge.core.CrateRegistry;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.data.HashCache;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
@@ -19,6 +19,8 @@ import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -47,7 +49,7 @@ class CrateLootTableProvider implements DataProvider {
 
 
     @Override
-    public void run(HashCache cache) {
+    public void run(@NotNull CachedOutput cache) {
         lootTables.clear();
         Path outFolder = generator.getOutputFolder();
 
@@ -64,7 +66,7 @@ class CrateLootTableProvider implements DataProvider {
                 Path out = getPath(outFolder, name);
 
                 try {
-                    DataProvider.save(GSON, cache, LootTables.serialize(table), out);
+                    DataProvider.saveStable(cache, LootTables.serialize(table), out);
                 } catch (IOException e) {
                     // System.out.println("Couldn't save loot table " + out);
                     // System.out.println(Arrays.toString(e.getStackTrace()));
@@ -99,7 +101,7 @@ class CrateLootTableProvider implements DataProvider {
     }
 
     private void register(Block block, LootTable.Builder table) {
-        register(block.getRegistryName(), table);
+        register(ForgeRegistries.BLOCKS.getKey(block), table);
     }
 
     private void register(ResourceLocation registryName, LootTable.Builder table) {

@@ -8,6 +8,7 @@ import net.minecraft.world.item.Item;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.RegistryObject;
 
 public class CrateItemModelProvider extends ItemModelProvider {
 
@@ -20,8 +21,8 @@ public class CrateItemModelProvider extends ItemModelProvider {
     protected void registerModels() {
         for (String material : CrateRegistry.woodTypes) {
             // System.out.println(material);
-            Item crateItem = CrateRegistry.items.get(material).get();
-            ResourceLocation resourceLocation = crateItem.getRegistryName();
+            RegistryObject<Item> crateRegistryObject = CrateRegistry.items.get(material);
+            ResourceLocation resourceLocation = crateRegistryObject.getId();
 
             getBuilder(resourceLocation.getPath())
                     .parent(new ModelFile.UncheckedModelFile("block/block"))

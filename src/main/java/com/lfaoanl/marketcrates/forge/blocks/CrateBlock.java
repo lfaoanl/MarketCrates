@@ -21,7 +21,7 @@ public class CrateBlock extends AbstractCrateBlock {
         // FORGE open inventory
         BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof CrateBlockEntity) {
-            NetworkHooks.openGui((ServerPlayer) player, (CrateBlockEntity) tile, tile.getBlockPos());
+            NetworkHooks.openScreen((ServerPlayer) player, (CrateBlockEntity) tile, tile.getBlockPos());
         }
 
     }
