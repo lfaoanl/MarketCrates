@@ -6,5 +6,6 @@
   "block.marketcrates.acacia_crate":"Acacia Crate",
   "block.marketcrates.dark_oak_crate":"Dark Oak Crate",
   "block.marketcrates.crimson_crate":"Crimson Crate",
-  "block.marketcrates.warped_crate": "Warped Crate"
+  "block.marketcrates.warped_crate": "Warped Crate",
+  "block.marketcrates.mangrove_crate": "Mangrove Crate"
 }
