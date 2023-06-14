@@ -1,7 +1,7 @@
 package com.lfaoanl.marketcrates.forge.data;
 
 import net.minecraft.data.DataGenerator;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.data.event.GatherDataEvent;
 
 public class CrateDataGenerator {
 
@@ -9,20 +9,17 @@ public class CrateDataGenerator {
 
 
         DataGenerator generator = event.getGenerator();
+        // Recipes
+        generator.addProvider(event.includeServer(), new CrateRecipeProvider(generator));
+        // LootTable
+        generator.addProvider(event.includeServer(), new CrateLootTableProvider(generator));
 
-        if (event.includeServer()) {
-            // Recipes
-            generator.addProvider(new CrateRecipeProvider(generator));
-            // LootTable
-            generator.addProvider(new CrateLootTableProvider(generator));
-        }
-        if (event.includeClient()) {
-            // BlockStates
-            // System.out.println("LFAOANL: Data generator");
-            generator.addProvider(new CrateBlockStates(generator, event.getExistingFileHelper()));
 
-            // Items
-            generator.addProvider(new CrateItemModelProvider(generator, event.getExistingFileHelper()));
-        }
+        // BlockStates
+        // System.out.println("LFAOANL: Data generator");
+        generator.addProvider(event.includeClient(), new CrateBlockStates(generator, event.getExistingFileHelper()));
+        // Items
+        generator.addProvider(event.includeClient(), new CrateItemModelProvider(generator, event.getExistingFileHelper()));
+
     }
 }
