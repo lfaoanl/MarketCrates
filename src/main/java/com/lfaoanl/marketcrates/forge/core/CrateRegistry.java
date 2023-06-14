@@ -34,7 +34,7 @@ public class CrateRegistry {
     public static final RegistryObject<MenuType<CrateDoubleContainer>> CONTAINER_CRATE_DOUBLE = registerContainer("crate_double", (IContainerFactory<CrateDoubleContainer>) (windowId, playerInv, data) -> new CrateDoubleContainer(windowId, playerInv));
 
 
-    public static String[] woodTypes = new String[]{"oak", "spruce", "birch", "jungle", "acacia", "dark_oak", "crimson", "warped"};
+    public static String[] woodTypes = new String[]{"oak", "spruce", "birch", "jungle", "acacia", "dark_oak", "mangrove", "crimson", "warped"};
 
     public static final RegistryObject<BlockEntityType<CrateBlockEntity>> CRATE_TILE = TILES.register("crate", () -> BlockEntityType.Builder.of(CrateBlockEntity::new, CrateRegistry.validCrates()).build(null));
 
