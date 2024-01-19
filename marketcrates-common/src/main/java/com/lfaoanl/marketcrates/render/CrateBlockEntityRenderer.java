@@ -15,12 +15,14 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Direction;
 
+import static org.joml.Math.toRadians;
+
 public class CrateBlockEntityRenderer<H extends AbstractCrateBlockEntity> implements BlockEntityRenderer<H> {
 
-    private final Quaternionf SOUTH = new Quaternionf().rotateXYZ(0, 180, 0);
-    private final Quaternionf EAST = new Quaternionf().rotateXYZ(0, 270, 0);
-    private final Quaternionf WEST = new Quaternionf().rotateXYZ(0, 90, 0);
-    private final Quaternionf INCLINED = new Quaternionf().rotateXYZ(-22.5f, 0, 0);
+    private final Quaternionf SOUTH = new Quaternionf().rotateXYZ(0, toRadians(180), 0);
+    private final Quaternionf EAST = new Quaternionf().rotateXYZ(0, toRadians(270), 0);
+    private final Quaternionf WEST = new Quaternionf().rotateXYZ(0, toRadians(90), 0);
+    private final Quaternionf INCLINED = new Quaternionf().rotateXYZ(toRadians(-22.5f), 0, 0);
 
     public CrateBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
     }

@@ -13,6 +13,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.collection.DefaultedList;
 
+import static org.joml.Math.toRadians;
+
 public class ItemOrientation {
 
     private final ItemStack itemStack;
@@ -56,11 +58,11 @@ public class ItemOrientation {
 
         int lowIncline = -10;
         int incline = 25;
-        rotation[0] = new Quaternionf().rotateXYZ(randomInt(lowIncline, incline), randomInt(45), randomInt(incline));
-        rotation[1] = new Quaternionf().rotateXYZ(randomInt(lowIncline, incline), randomInt(45), randomInt(incline));
-        rotation[2] = new Quaternionf().rotateXYZ(randomInt(lowIncline, incline), randomInt(45), randomInt(incline));
+        rotation[0] = new Quaternionf().rotateXYZ(toRadians(randomInt(lowIncline, incline)), toRadians(randomInt(45)), toRadians(randomInt(incline)));
+        rotation[1] = new Quaternionf().rotateXYZ(toRadians(randomInt(lowIncline, incline)), toRadians(randomInt(45)), toRadians(randomInt(incline)));
+        rotation[2] = new Quaternionf().rotateXYZ(toRadians(randomInt(lowIncline, incline)), toRadians(randomInt(45)), toRadians(randomInt(incline)));
 
-        HORIZONTAL = new Quaternionf().rotateXYZ(85, 0, 0);
+        HORIZONTAL = new Quaternionf().rotateXYZ(toRadians(85), 0, 0);
 
         hasOrientations = true;
 
