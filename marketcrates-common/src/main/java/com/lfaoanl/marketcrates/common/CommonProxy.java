@@ -1,11 +1,11 @@
 package com.lfaoanl.marketcrates.common;
 
 import com.lfaoanl.marketcrates.common.IMarketCratesProxy;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.World;
 
 public class CommonProxy implements IMarketCratesProxy {
 
-    public Level getWorld() {
+    public World getWorld() {
         return null;
     }
 }

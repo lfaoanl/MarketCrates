@@ -1,20 +1,20 @@
 package com.lfaoanl.marketcrates.gui;
 
 import com.lfaoanl.marketcrates.Ref;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 public class CrateDoubleScreen extends BaseCrateScreen<BaseCrateContainer> {
 
-    private ResourceLocation GUI = new ResourceLocation(Ref.MODID, "textures/gui/crate_double.png");
+    private Identifier GUI = new Identifier(Ref.MODID, "textures/gui/crate_double.png");
 
-    public CrateDoubleScreen(BaseCrateContainer container, Inventory inv, Component name) {
+    public CrateDoubleScreen(BaseCrateContainer container, PlayerInventory inv, Text name) {
         super(container, inv, name);
     }
 
     @Override
-    ResourceLocation getGuiTexture() {
+    Identifier getGuiTexture() {
         return GUI;
     }
 }

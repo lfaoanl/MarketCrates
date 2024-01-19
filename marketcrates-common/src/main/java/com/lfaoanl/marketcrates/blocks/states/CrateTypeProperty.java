@@ -1,8 +1,7 @@
 package com.lfaoanl.marketcrates.blocks.states;
 
-import net.minecraft.world.level.block.state.properties.EnumProperty;
-
 import java.util.Collection;
+import net.minecraft.state.property.EnumProperty;
 
 public class CrateTypeProperty extends EnumProperty<CrateType> {
 

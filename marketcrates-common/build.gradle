@@ -1,35 +1,14 @@
-//plugins {
-//    id 'fabric-loom' version '0.10-SNAPSHOT'
-//    id 'maven-publish'
-//}
-//dependencies {
-//    // To change the versions see the gradle.properties file
-//    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-//    mappings loom.officialMojangMappings()
-//
-//}
-buildscript {
-    repositories {
-        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
-        maven { url = 'https://maven.minecraftforge.net' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-    }
+plugins {
+    id 'fabric-loom' version '1.5-SNAPSHOT'
+    id 'maven-publish'
 }
-
-apply plugin: 'net.minecraftforge.gradle'
-
+dependencies {
+    // To change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+}
 java {
     archivesBaseName = 'marketcrates-common'
-    toolchain.languageVersion = JavaLanguageVersion.of(16)
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
 }
 
-minecraft {
-    mappings channel: 'official', version: '1.17.1'
-}
-
-dependencies {
-    minecraft 'net.minecraftforge:forge:1.17.1-37.0.109'
-}

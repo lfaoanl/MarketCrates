@@ -13,23 +13,18 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-
+import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.util.Identifier;
 import java.util.HashMap;
 
 public class CrateRegistry {
-    public static final ResourceLocation CRATE_CHANNEL = new ResourceLocation(Ref.MODID, "crate_channel");
+    public static final Identifier CRATE_CHANNEL = new Identifier(Ref.MODID, "crate_channel");
 
 //    public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, References.MODID);
 //    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, References.MODID);
@@ -50,35 +45,35 @@ public class CrateRegistry {
 
     public static BlockEntityType<CrateBlockEntity> CRATE_BLOCK_ENTITY;
 
-    public static MenuType<CrateDoubleContainer> CRATE_DOUBLE_SCREEN;
-    public static MenuType<CrateContainer> CRATE_SCREEN;
+    public static ScreenHandlerType<CrateDoubleContainer> CRATE_DOUBLE_SCREEN;
+    public static ScreenHandlerType<CrateContainer> CRATE_SCREEN;
 
     public static void preInit() {
         for (String type : woodTypes) {
-            AbstractCrateBlock block = new CrateBlock();
+            AbstractCrateBlock block = new CrateBlock(AbstractCrateBlock.properties);
             blocks.put(type, block);
-            items.put(type, new CrateItem(block, new FabricItemSettings().group(CreativeModeTab.TAB_DECORATIONS)));
+            items.put(type, new CrateItem(block, new FabricItemSettings()));
         }
 
-        CRATE_DOUBLE_SCREEN = ScreenHandlerRegistry.registerSimple(new ResourceLocation(Ref.MODID, "crate_double"), CrateDoubleContainer::new);
-        CRATE_SCREEN = ScreenHandlerRegistry.registerSimple(new ResourceLocation(Ref.MODID, "crate"), CrateContainer::new);
+        CRATE_DOUBLE_SCREEN = ScreenHandlerRegistry.registerSimple(new Identifier(Ref.MODID, "crate_double"), CrateDoubleContainer::new);
+        CRATE_SCREEN = ScreenHandlerRegistry.registerSimple(new Identifier(Ref.MODID, "crate"), CrateContainer::new);
 
     }
 
     public static void init() {
 
         for (String type : woodTypes) {
-            ResourceLocation resourceLocation = new ResourceLocation(Ref.MODID, type + "_crate");
-            Registry.register(Registry.BLOCK, resourceLocation, blocks.get(type));
-            Registry.register(Registry.ITEM, resourceLocation, items.get(type));
+            Identifier resourceLocation = new Identifier(Ref.MODID, type + "_crate");
+            Registry.register(Registries.BLOCK, resourceLocation, blocks.get(type));
+            Registry.register(Registries.ITEM, resourceLocation, items.get(type));
         }
 
-        ResourceLocation rlCrateBlockEntity = new ResourceLocation(Ref.MODID, "crate");
+        Identifier rlCrateBlockEntity = new Identifier(Ref.MODID, "crate");
 
         Block[] blocksArray = blocks.values().toArray(new Block[blocks.size()]);
 
         BlockEntityType<CrateBlockEntity> beBuilder = FabricBlockEntityTypeBuilder.create(CrateBlockEntity::new, blocksArray).build(null);
-        CRATE_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, rlCrateBlockEntity, beBuilder);
+        CRATE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, rlCrateBlockEntity, beBuilder);
     }
 
 }

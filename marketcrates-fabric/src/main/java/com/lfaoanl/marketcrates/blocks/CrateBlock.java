@@ -1,29 +1,41 @@
 package com.lfaoanl.marketcrates.blocks;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class CrateBlock extends AbstractCrateBlock {
+    public static final MapCodec<CrateBlock> CODEC = CrateBlock.createCodec(CrateBlock::new);
+
+    public CrateBlock(Settings settings) {
+        super(settings);
+    }
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new CrateBlockEntity(pos, state);
     }
 
-    protected void openGui(BlockState state, Level world, Player player, BlockPos pos) {
+    protected void openGui(BlockState state, World world, PlayerEntity player, BlockPos pos) {
         //This will call the createScreenHandlerFactory method from BlockWithEntity, which will return our blockEntity casted to
         //a namedScreenHandlerFactory. If your block class does not extend BlockWithEntity, it needs to implement createScreenHandlerFactory.
-        MenuProvider screenHandlerFactory = state.getMenuProvider(world, pos);
+        NamedScreenHandlerFactory screenHandlerFactory = state.createScreenHandlerFactory(world, pos);
 
         if (screenHandlerFactory != null) {
             //With this call the server will request the client to open the appropriate Screenhandler
-            player.openMenu(screenHandlerFactory); //openHandledScreen(screenHandlerFactory);
+            player.openHandledScreen(screenHandlerFactory); //openHandledScreen(screenHandlerFactory);
         }
+    }
+
+    @Override
+    protected MapCodec<? extends BlockWithEntity> getCodec() {
+        return CODEC;
     }
 }

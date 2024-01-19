@@ -13,11 +13,11 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class MarketCratesFabricClient extends ClientProxy implements ClientModInitializer {
@@ -41,14 +41,14 @@ public class MarketCratesFabricClient extends ClientProxy implements ClientModIn
             // Read packet data on the event loop
             BlockPos target = buf.readBlockPos();
             int itemsSize = buf.readInt();
-            NonNullList<ItemStack> items = NonNullList.create();
+            DefaultedList<ItemStack> items = DefaultedList.of();
             for (int i = 0; i < itemsSize; i++) {
-                items.add(i, buf.readItem());
+                items.add(i, buf.readItemStack());
             }
 
             client.execute(() -> {
                 // Everything in this lambda is run on the render thread
-                Level world = MarketCrates.proxy.getWorld();
+                World world = MarketCrates.proxy.getWorld();
 
                 if (world != null) {
                     BlockEntity tile = world.getBlockEntity(target);

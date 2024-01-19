@@ -1,23 +1,23 @@
 package com.lfaoanl.marketcrates.items;
 
 import com.lfaoanl.marketcrates.blocks.AbstractCrateBlock;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class CrateItem extends BlockItem {
 
-    public CrateItem(Block blockIn, Properties builder) {
+    public CrateItem(Block blockIn, Settings builder) {
         super(blockIn, builder);
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
-        BlockPos pos = context.getClickedPos();
-        Level world = context.getLevel();
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        BlockPos pos = context.getBlockPos();
+        World world = context.getWorld();
 
         // If item is same as BlockItem of targetted CrateBlock
         Block block = world.getBlockState(pos).getBlock();
@@ -41,6 +41,6 @@ public class CrateItem extends BlockItem {
 //            }
         }
 
-        return super.useOn(context);
+        return super.useOnBlock(context);
     }
 }
