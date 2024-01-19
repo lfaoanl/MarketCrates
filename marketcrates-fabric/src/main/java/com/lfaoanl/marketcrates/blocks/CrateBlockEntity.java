@@ -6,14 +6,14 @@ import com.lfaoanl.marketcrates.gui.*;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 
 public class CrateBlockEntity extends AbstractCrateBlockEntity {
 
@@ -23,22 +23,22 @@ public class CrateBlockEntity extends AbstractCrateBlockEntity {
 
     @Override
     public void sendContents() {
-        if (!level.isClientSide()) {
+        if (!world.isClient) {
             // FORGE send packet to client
 //            PacketDistributor.PacketTarget target = PacketDistributor.TRACKING_CHUNK.with(() -> (LevelChunk) this.getLevel().getChunk(this.getBlockPos()));
 //            CratesPacketHandler.INSTANCE.send(target, new CrateItemsPacket(this.getBlockPos(), ItemOrientation.toItemStack(stacks)));
 
-            FriendlyByteBuf data = PacketByteBufs.create();
-            BlockPos blockPos = this.getBlockPos();
+            PacketByteBuf data = PacketByteBufs.create();
+            BlockPos blockPos = getPos();
             data.writeBlockPos(blockPos);
             data.writeInt(stacks.size());
 
             for (ItemStack item : ItemOrientation.toItemStack(stacks)) {
-                data.writeItem(item);
+                data.writeItemStack(item);
             }
 
             // Iterate over all players tracking a position in the world and send the packet to each player
-            for (ServerPlayer player : PlayerLookup.tracking((ServerLevel) this.getLevel(), blockPos)) {
+            for (ServerPlayerEntity player : PlayerLookup.tracking((ServerWorld) world, blockPos)) {
                 ServerPlayNetworking.send(player, CrateRegistry.CRATE_CHANNEL, data);
 
             }
@@ -46,7 +46,7 @@ public class CrateBlockEntity extends AbstractCrateBlockEntity {
     }
 
     @Override
-    protected AbstractContainerMenu createMenu(int id, Inventory player) {
+    protected ScreenHandler createScreenHandler(int id, PlayerInventory player) {
         if (isDoubleCrate()) {
             return new CrateDoubleContainer(id, player, this);
         }

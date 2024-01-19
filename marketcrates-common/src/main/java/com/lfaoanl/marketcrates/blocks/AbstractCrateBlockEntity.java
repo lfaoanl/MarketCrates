@@ -2,24 +2,21 @@ package com.lfaoanl.marketcrates.blocks;
 
 import com.lfaoanl.marketcrates.common.ItemOrientation;
 import com.lfaoanl.marketcrates.common.MarketCrates;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.LockableContainerBlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
 
-public abstract class AbstractCrateBlockEntity extends BaseContainerBlockEntity {
+public abstract class AbstractCrateBlockEntity extends LockableContainerBlockEntity {
 
     //    private NonNullList<ItemStack> stacks = NonNullList.withSize(6, ItemStack.EMPTY);
-    protected NonNullList<ItemOrientation> stacks = NonNullList.withSize(12, ItemOrientation.EMPTY);
+    protected DefaultedList<ItemOrientation> stacks = DefaultedList.ofSize(12, ItemOrientation.EMPTY);
 
     private boolean isDouble = false;
 
@@ -28,104 +25,102 @@ public abstract class AbstractCrateBlockEntity extends BaseContainerBlockEntity 
     }
 
 
-    public NonNullList<ItemOrientation> getItems() {
+    public DefaultedList<ItemOrientation> getItems() {
         return stacks;
     }
 
     public boolean isDoubleCrate() {
-        if (getBlockState().isAir()) {
+        if (getCachedState().isAir()) {
             return this.isDouble;
         }
         // Store items to be able to retreive it after the block is broken
-        this.isDouble = getBlockState().getValue(AbstractCrateBlock.TYPE).isDouble();
+        this.isDouble = getCachedState().get(AbstractCrateBlock.TYPE).isDouble();
 
         return this.isDouble;
     }
 
-    public void setItem(int index, ItemStack stack) {
+    public void setStack(int index, ItemStack stack) {
         this.getItems().set(index, new ItemOrientation(stack));
-        if (stack.getCount() > this.getMaxStackSize()) {
-            stack.setCount(this.getMaxStackSize());
+        if (stack.getCount() > this.getMaxCountPerStack()) {
+            stack.setCount(this.getMaxCountPerStack());
         }
 
-        this.setChanged();
+        this.markDirty();
     }
 
     public boolean isEmpty() {
         return this.getItems().stream().allMatch(ItemOrientation::isEmpty);
     }
 
-    public ItemStack getItem(int index) {
+    public ItemStack getStack(int index) {
         // TODO increase size of `stacks` and check if crateIsDouble to allow the supplied index
         return this.getItems().get(index).getItemStack();
     }
 
-    public ItemStack removeItem(int index, int count) {
-        ItemStack itemstack = ContainerHelper.removeItem(ItemOrientation.toItemStack(stacks), index, count);
+    public ItemStack removeStack(int index, int count) {
+        ItemStack itemstack = Inventories.splitStack(ItemOrientation.toItemStack(stacks), index, count);
         if (!itemstack.isEmpty()) {
-            this.setChanged();
+            this.markDirty();
         }
         return itemstack;
     }
 
     @Override
-    public void setChanged() {
-        super.setChanged();
+    public void markDirty() {
+        super.markDirty();
         sendContents();
     }
 
-    public ItemStack removeItemNoUpdate(int index) {
+    public ItemStack removeStack(int index) {
         ItemOrientation orientation = index >= 0 && index < stacks.size() ? stacks.set(index, ItemOrientation.EMPTY) : ItemOrientation.EMPTY;
 
         return orientation.getItemStack();
     }
 
     @Override
-    protected Component getDefaultName() {
-        return new TranslatableComponent("container.crate");
+    protected Text getContainerName() {
+        return Text.translatable("container.crate");
     }
 
     @Override
-    public int getContainerSize() {
+    public int size() {
 //        if (isDoubleCrate()) {
         return 12;
 //        }
 //        return 6;
     }
 
-    public boolean stillValid(Player player) {
-        if (this.level.getBlockEntity(this.worldPosition) != this) {
+    public boolean canPlayerUse(PlayerEntity player) {
+        if (this.world.getBlockEntity(this.pos) != this) {
             return false;
         } else {
-            return !(player.distanceToSqr((double) this.worldPosition.getX() + 0.5D, (double) this.worldPosition.getY() + 0.5D, (double) this.worldPosition.getZ() + 0.5D) > 64.0D);
+            return !(player.squaredDistanceTo((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D, (double) this.pos.getZ() + 0.5D) > 64.0D);
         }
     }
 
-    public void clearContent() {
+    public void clear() {
         this.getItems().clear();
     }
 
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
 
         this.stacks = loadFromNbt(nbt);
     }
 
-    private NonNullList<ItemOrientation> loadFromNbt(CompoundTag nbt) {
-        NonNullList<ItemStack> items = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(nbt, items);
+    private DefaultedList<ItemOrientation> loadFromNbt(NbtCompound nbt) {
+        DefaultedList<ItemStack> items = DefaultedList.ofSize(size(), ItemStack.EMPTY);
+        Inventories.readNbt(nbt, items);
         return ItemOrientation.toItemOrientation(items);
     }
 
-    public CompoundTag save(CompoundTag compound) {
-        super.save(compound);
+    public void writeNbt(NbtCompound compound) {
+        super.writeNbt(compound);
 
-        ContainerHelper.saveAllItems(compound, ItemOrientation.toItemStack(this.stacks));
-
-        return compound;
+        Inventories.writeNbt(compound, ItemOrientation.toItemStack(this.stacks));
     }
 
-    public void receiveContents(NonNullList<ItemStack> stacks) {
+    public void receiveContents(DefaultedList<ItemStack> stacks) {
         MarketCrates.LOGGER.debug("Received packets");
         MarketCrates.LOGGER.debug(stacks.get(0));
 
@@ -135,10 +130,10 @@ public abstract class AbstractCrateBlockEntity extends BaseContainerBlockEntity 
     public abstract void sendContents();
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag updateTag = super.getUpdateTag();
+    public NbtCompound toInitialChunkDataNbt() {
+        NbtCompound updateTag = super.toInitialChunkDataNbt();
 
-        ContainerHelper.saveAllItems(updateTag, ItemOrientation.toItemStack(stacks));
+        Inventories.writeNbt(updateTag, ItemOrientation.toItemStack(stacks));
 
         return updateTag;
     }

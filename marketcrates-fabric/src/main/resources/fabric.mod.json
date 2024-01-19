@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "marketcrates",
-  "version": "1.3",
+  "version": "1.4",
 
   "name": "Marketcrates",
   "description": "Some crates to spice up your towns, markets, fishing docs, you name it!\n- Available in all different wood types\n- Shows their inventory contents\n- You can stack them\n- You can put a stick under it to give the crate in incline\nShift click the crate to place stack crates in the same block space.\nHit the crate with a stick to incline the crate. Hit it once with an axe to retrieve the stick (For creative mode right clicking with a stick toggles it)\n",
@@ -30,8 +30,8 @@
   },
 
   "depends": {
-    "fabricloader": ">=0.12.5",
+    "fabricloader": ">=0.0.94.1",
     "fabric": "*",
-    "minecraft": "1.17.1"
+    "minecraft": ">=1.20.4"
   }
 }

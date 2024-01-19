@@ -1,8 +1,8 @@
 package com.lfaoanl.marketcrates.common;
 
-import net.minecraft.world.level.Level;
+import net.minecraft.world.World;
 
 public interface IMarketCratesProxy {
 
-    Level getWorld();
+    World getWorld();
 }

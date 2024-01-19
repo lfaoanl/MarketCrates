@@ -1,20 +1,20 @@
 package com.lfaoanl.marketcrates.gui;
 
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.Container;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.screen.slot.Slot;
 
-public abstract class BaseCrateContainer extends AbstractContainerMenu {
+public abstract class BaseCrateContainer extends ScreenHandler {
 
 
-    protected final Container inventory;
+    protected final Inventory inventory;
     private final int size;
 
-    public BaseCrateContainer(int id, Inventory playerInventory, Container inventory, int size, MenuType<?extends BaseCrateContainer> containerType, boolean isDouble) {
+    public BaseCrateContainer(int id, PlayerInventory playerInventory, Inventory inventory, int size, ScreenHandlerType<?extends BaseCrateContainer> containerType, boolean isDouble) {
         super(containerType, id);
 
         if (isDouble) {
@@ -41,9 +41,9 @@ public abstract class BaseCrateContainer extends AbstractContainerMenu {
 
         this.size = size;
 
-        checkContainerSize(inventory, size);
+        checkSize(inventory, size);
         this.inventory = inventory;
-        inventory.startOpen(playerInventory.player);
+        inventory.onOpen(playerInventory.player);
 
         drawUserInventory(playerInventory);
 
@@ -58,7 +58,7 @@ public abstract class BaseCrateContainer extends AbstractContainerMenu {
 //        }
     }
 
-    private void drawUserInventory(Inventory playerInventory) {
+    private void drawUserInventory(PlayerInventory playerInventory) {
         // Player inventory
         for (int k = 0; k < 3; ++k) {
             for (int i1 = 0; i1 < 9; ++i1) {
@@ -75,15 +75,15 @@ public abstract class BaseCrateContainer extends AbstractContainerMenu {
     /**
      * Determines whether supplied player can use this container
      */
-    public boolean stillValid(Player playerIn) {
-        return this.inventory.stillValid(playerIn);
+    public boolean canUse(PlayerEntity playerIn) {
+        return this.inventory.canPlayerUse(playerIn);
     }
 
     /**
      * Handle when the stack in slot {@code index} is shift-clicked. Normally this moves the stack between the player
      * inventory and the other inventory(s).
      */
-    public ItemStack quickMoveStack(Player playerIn, int slotIndex) {
+    public ItemStack quickMove(PlayerEntity playerIn, int slotIndex) {
 
         // Init empty itemstack
         ItemStack copyStack = ItemStack.EMPTY;
@@ -92,10 +92,10 @@ public abstract class BaseCrateContainer extends AbstractContainerMenu {
         Slot slot = this.slots.get(slotIndex);
 
         // If slot has stuff
-        if (slot != null && slot.hasItem()) {
+        if (slot != null && slot.hasStack()) {
 
             // Get stuff from slot
-            ItemStack stackFromSlot = slot.getItem();
+            ItemStack stackFromSlot = slot.getStack();
             copyStack = stackFromSlot.copy();
 
 
@@ -103,24 +103,24 @@ public abstract class BaseCrateContainer extends AbstractContainerMenu {
             if (slotIndex >= playerInventorySize) {
 
                 // If slot is changed
-                if (!this.moveItemStackTo(stackFromSlot, 0, playerInventorySize, true)) {
+                if (!this.insertItem(stackFromSlot, 0, playerInventorySize, true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(stackFromSlot, playerInventorySize, this.slots.size(), false)) {
+            } else if (!this.insertItem(stackFromSlot, playerInventorySize, this.slots.size(), false)) {
                 return ItemStack.EMPTY;
             }
 
             if (stackFromSlot.isEmpty()) {
-                slot.set(ItemStack.EMPTY);
+                slot.setStackNoCallbacks(ItemStack.EMPTY);
             } else {
-                slot.setChanged();
+                slot.markDirty();
             }
 
             if (stackFromSlot.getCount() == copyStack.getCount()) {
                 return ItemStack.EMPTY;
             }
 
-            slot.onTake(playerIn, stackFromSlot);
+            slot.onTakeItem(playerIn, stackFromSlot);
         }
 
         return copyStack;
@@ -129,9 +129,9 @@ public abstract class BaseCrateContainer extends AbstractContainerMenu {
     /**
      * Called when the container is closed.
      */
-    public void removed(Player playerIn) {
-        super.removed(playerIn);
-        this.inventory.stopOpen(playerIn);
+    public void onClosed(PlayerEntity playerIn) {
+        super.onClosed(playerIn);
+        this.inventory.onClose(playerIn);
     }
 
 }

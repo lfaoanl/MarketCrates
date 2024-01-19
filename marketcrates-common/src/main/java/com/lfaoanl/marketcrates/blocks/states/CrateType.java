@@ -1,13 +1,12 @@
 package com.lfaoanl.marketcrates.blocks.states;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.phys.shapes.VoxelShape;
-
 import java.util.Arrays;
 import java.util.Collection;
+import net.minecraft.block.Block;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.shape.VoxelShape;
 
-public enum CrateType implements StringRepresentable {
+public enum CrateType implements StringIdentifiable {
 
     DEFAULT("default", 8d, false),
     INCLINED("inclined", 14d, true),
@@ -34,15 +33,15 @@ public enum CrateType implements StringRepresentable {
     }
 
     @Override
-    public String getSerializedName() {
+    public String asString() {
         return this.name;
     }
 
     public VoxelShape getShape(boolean horizontal) {
         if (horizontal) {
-            return Block.box(0.0D, 0.0D, 2.0D, 16.0D, height, 14.0D);
+            return Block.createCuboidShape(0.0D, 0.0D, 2.0D, 16.0D, height, 14.0D);
         }
-        return Block.box(2.0D, 0.0D, 0.0D, 14.0D, height, 16.0D);
+        return Block.createCuboidShape(2.0D, 0.0D, 0.0D, 14.0D, height, 16.0D);
     }
 
     public boolean isDouble() {

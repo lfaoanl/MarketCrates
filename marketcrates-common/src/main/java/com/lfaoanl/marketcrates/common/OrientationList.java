@@ -1,10 +1,9 @@
 package com.lfaoanl.marketcrates.common;
 
-import net.minecraft.core.NonNullList;
-
 import java.util.List;
+import net.minecraft.util.collection.DefaultedList;
 
-public class OrientationList extends NonNullList<ItemOrientation> {
+public class OrientationList extends DefaultedList<ItemOrientation> {
 
 
     protected OrientationList(List<ItemOrientation> p_122777_, ItemOrientation p_122778_) {
