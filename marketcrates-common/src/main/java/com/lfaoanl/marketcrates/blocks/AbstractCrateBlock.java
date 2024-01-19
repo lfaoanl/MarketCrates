@@ -5,6 +5,7 @@ import com.lfaoanl.marketcrates.blocks.states.CrateTypeProperty;
 import com.lfaoanl.marketcrates.common.ItemOrientation;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -105,8 +106,14 @@ public abstract class AbstractCrateBlock extends BlockWithEntity implements Wate
     }
 
     public BlockState getPlacementState(ItemPlacementContext context) {
+        BlockPos blockPos = context.getBlockPos();
+        BlockState blockState = context.getWorld().getBlockState(blockPos);
         FluidState fluidstate = context.getWorld().getFluidState(context.getBlockPos());
         boolean isWaterLogged = fluidstate.getFluid() == Fluids.WATER;
+
+        if (blockState.isOf(this)) {
+            return (BlockState)((BlockState)blockState.with(TYPE, CrateType.DOUBLE)).with(WATERLOGGED, isWaterLogged);
+        }
         return this.getDefaultState().with(FACING, context.getHorizontalPlayerFacing().getOpposite()).with(WATERLOGGED, isWaterLogged);
     }
 
@@ -135,6 +142,24 @@ public abstract class AbstractCrateBlock extends BlockWithEntity implements Wate
     }
 
     @Override
+    public boolean canReplace(BlockState state, ItemPlacementContext context) {
+        ItemStack itemStack = context.getStack();
+        CrateType crateType = state.get(TYPE);
+        if (crateType == CrateType.DOUBLE || !itemStack.isOf(this.asItem())) {
+            return false;
+        }
+        if (context.canReplaceExisting()) {
+            boolean bl = context.getHitPos().y - (double)context.getBlockPos().getY() > 0.5;
+            Direction direction = context.getSide();
+            if (crateType == CrateType.DEFAULT) {
+                return direction == Direction.UP || bl && direction.getAxis().isHorizontal();
+            }
+            return direction == Direction.DOWN || !bl && direction.getAxis().isHorizontal();
+        }
+        return true;
+    }
+
+    @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             // System.out.println("onReplaced");
@@ -149,8 +174,8 @@ public abstract class AbstractCrateBlock extends BlockWithEntity implements Wate
 
                 this.oldItems = ((AbstractCrateBlockEntity) world.getBlockEntity(pos)).getItems();
             }
-            super.onStateReplaced(state, world, pos, newState, isMoving);
         }
+        super.onStateReplaced(state, world, pos, newState, isMoving);
     }
 
     public ItemStack getBlockItem() {
